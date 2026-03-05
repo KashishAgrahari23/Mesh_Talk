@@ -30,4 +30,4 @@ export const publishToQueue = async (queueName:string , message:any) =>{
         console.error(`Failed to publish message to queue ${queueName}:`, error);
         throw error;
     }
-}
+} 
