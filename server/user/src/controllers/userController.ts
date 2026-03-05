@@ -1,3 +1,4 @@
+import { publishToQueue } from "../config/rabbitmq.js";
 import { TryCatch } from "../config/TryCatch.js";
 import { redisClient } from "../index.js";
 
@@ -17,5 +18,16 @@ export const loginUser = TryCatch(async(req,res)=>{
         EX:300,
     })
 
-    await
-})
+    await redisClient.set(rateLimitKey,"true",{
+        EX:60,
+    })
+
+    const message:{
+        to:email,
+        subject:"your otp code",
+        body:`your otp is ${otp} , valid for 5 min`,
+    } 
+
+    await publishToQueue("sent-otp" , message)
+    res.status(200).json({message:"otp send successfully"})
+}) 
