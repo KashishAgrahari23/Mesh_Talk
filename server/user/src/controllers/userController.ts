@@ -23,11 +23,12 @@ export const loginUser = TryCatch(async(req,res)=>{
     })
 
     const message={
-        to:email,
+        email:email,
+        otp:otp,
         subject:"your otp code",
         body:`your otp is ${otp} , valid for 5 min`,
     } 
 
-    await publishToQueue("sent-otp" , message)
+    await publishToQueue("send-otp" , message)
     res.status(200).json({message:"otp send successfully"})
 }) 

@@ -16,7 +16,7 @@ export const startSendOtpConsumer =async()=>{
         )
         const channel = await connection.createChannel()
 
-        await channel.assertQueue("send_otp" , {durable:true} )
+        await channel.assertQueue("send-otp" , {durable:true} )
         console.log("mail service consumer started , listening for otp emails")
         const transporter = nodemailer.createTransport({
             service: "gmail",
@@ -26,9 +26,10 @@ export const startSendOtpConsumer =async()=>{
             }
         })
 
-        await channel.consume("send_otp", async (msg) => {
+        await channel.consume("send-otp", async (msg) => {
             if (msg) {
                 const content = JSON.parse(msg.content.toString())
+                console.log(content)
                 try {
                     await transporter.sendMail({
                         from:"chat app",
@@ -40,7 +41,7 @@ export const startSendOtpConsumer =async()=>{
                     channel.ack(msg)
                 } catch (error) {
                     console.error("Failed to send otp:", error)
-                    channel.nack(msg, false, true)
+                    channel.nack(msg, false, false)
                 }
             }
         })

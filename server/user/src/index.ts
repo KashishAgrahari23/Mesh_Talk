@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import { createClient } from "redis";
 import connectDB from "./config/db.js";
 import { connectRabbitMQ } from "./config/rabbitmq.js";
+import loginRoute from "./routes/userRoutes.js"
 dotenv.config();
 const app: Express = express();
 const port = process.env.PORT || 5000;
@@ -23,6 +24,8 @@ redisClient
 app.get("/", (req: Request, res: Response) => {
   res.send("Express + TypeScript Server");
 });
+
+app.use("/api/v1",loginRoute)
 
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
