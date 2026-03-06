@@ -1,5 +1,5 @@
 import amqp from "amqplib"
-
+//A channel is how we communicate with RabbitMQ like connection pipe
 let channel: amqp.Channel
 
 export const connectRabbitMQ = async() => {
@@ -21,10 +21,10 @@ export const connectRabbitMQ = async() => {
 
 export const publishToQueue = async (queueName:string , message:any) =>{
     try {
-        await channel.assertQueue(queueName, { durable: true });
+        await channel.assertQueue(queueName, { durable: true }); // true means Queue survives server restart.
         channel.sendToQueue(queueName, Buffer.from(JSON.stringify(message)),{
             persistent:true
-        });
+        }); // agian true means message survives RabbitMQ restart.
         console.log(`Message published to queue ${queueName}`);
     } catch (error) {
         console.error(`Failed to publish message to queue ${queueName}:`, error);

@@ -1,7 +1,7 @@
 import { publishToQueue } from "../config/rabbitmq.js";
 import { TryCatch } from "../config/TryCatch.js";
 import { redisClient } from "../index.js";
-
+// kind of producer file to rabbitmq
 export const loginUser = TryCatch(async(req,res)=>{
     const {email} = req.body
     const rateLimitKey = `otp:ratelimit:${email}`
