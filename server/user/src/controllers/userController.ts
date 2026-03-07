@@ -2,6 +2,7 @@ import { generateToken } from "../config/generateToken.js";
 import { publishToQueue } from "../config/rabbitmq.js";
 import { TryCatch } from "../config/TryCatch.js";
 import { redisClient } from "../index.js";
+import type { AuthRequest } from "../middlewares/authMiddleware.js";
 import { User } from "../model/userModel.js";
 // kind of producer file to rabbitmq
 export const loginUser = TryCatch(async(req,res)=>{
@@ -60,4 +61,9 @@ export const verifyUser = TryCatch(async(req,res)=>{
 
     const token = generateToken(user)
     res.status(200).json({message:"user verified",user , token})
+})
+
+export const myProfile = TryCatch(async(req:AuthRequest,res)=>{
+    const user = req.user
+    res.json(user)
 })
