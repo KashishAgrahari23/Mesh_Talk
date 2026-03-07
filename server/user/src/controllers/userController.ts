@@ -91,12 +91,16 @@ export const getAllUser = TryCatch(async(req:AuthRequest , res)=>{
 })
 
 export const getUser = TryCatch(async(req:AuthRequest , res)=>{
-    const id = req.params
+    const id = req.params.id
     if(!id){
         res.status(400).json({message:" id not found"})
         return
     }
     const user = await User.findById(id)
+    if (!user) {
+        res.status(404).json({ message: "User not found" });
+        return;
+    }
     res.json({
         user
     })
