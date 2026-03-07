@@ -9,6 +9,6 @@ router.post("/verify", verifyUser)
 router.get("/profile" , authMiddleware , myProfile)
 router.post("/updateName" , authMiddleware , updateName)
 router.get("/users", authMiddleware, getAllUser)
-router.get("/user/:id", authMiddleware, getUser)
+router.get("/user/:id", getUser)
 
 export default router;
