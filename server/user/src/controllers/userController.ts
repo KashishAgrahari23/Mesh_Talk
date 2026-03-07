@@ -84,3 +84,21 @@ export const updateName = TryCatch (async(req:AuthRequest , res)=>{
         token
     }) 
 })
+
+export const getAllUser = TryCatch(async(req:AuthRequest , res)=>{
+    const users = await User.find()
+    res.json({users})
+})
+
+export const getUser = TryCatch(async(req:AuthRequest , res)=>{
+    const id = req.params
+    if(!id){
+        res.status(400).json({message:" id not found"})
+        return
+    }
+    const user = await User.findById(id)
+    res.json({
+        user
+    })
+
+})
