@@ -1,18 +1,27 @@
-import type { Request , Response , NextFunction } from "express";
+import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
-interface IUser extends Document {
-    _id: string,
-    name: string,
-    email: string,
+interface IUser {
+  _id: string;
+  name?: string;
+  email: string;
+}
+
+interface DecodedToken {
+  id: string;
+  email: string;
 }
 
 export interface AuthRequest extends Request {
-    user?:IUser | null
+  user?: IUser | null;
 }
 
-export const authMiddleware = async(req: AuthRequest, res: Response, next: NextFunction) : Promise <void> => {
-    try {
+export const authMiddleware = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
     const authHeader = req.headers.authorization;
 
     if (!authHeader) {
@@ -23,17 +32,17 @@ export const authMiddleware = async(req: AuthRequest, res: Response, next: NextF
     const token = authHeader.split(" ")[1];
 
     if (!token) {
-      res.status(401).json({ message: "No token provided" });
+      res.status(401).json({ message: "Invalid token format" });
       return;
     }
 
     const decoded = jwt.verify(
-        token,
-        process.env.JWT_SECRET as string
-    ) as unknown as DecodedToken;
+      token,
+      process.env.JWT_SECRET as string
+    ) as DecodedToken;
 
     req.user = {
-      _id: new Types.ObjectId(decoded.id),
+      _id: decoded.id,
       email: decoded.email,
     };
 
