@@ -7,4 +7,4 @@ const router = express.Router()
 router.post("/chat" , authMiddleware , createNewChat)
 router.get("/chats" , authMiddleware , getAllChats)
 
-export default router
+export default router 

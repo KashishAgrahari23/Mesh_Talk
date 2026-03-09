@@ -55,9 +55,13 @@ export const getAllChats = TryCatch(async(req:AuthRequest , res)=>{
                 seen:false
             })
             try {
-                const {data} = await axios.get(`${process.env.USER_SERVICE}/api/v1/user${otherUserId}`)
+
+                const url = `${process.env.USER_SERVICE}/api/v1/user/${otherUserId}`
+                console.log("Calling user service:", url)
+                console.log("env variable: " , process.env.USER_SERVICE)
+                const { data } = await axios.get(url)  
                 return {
-                    user:data,
+                    user:data.user,
                     chat:{
                         ...chat.toObject(),
                         latestMessage: chat.latestMessage || null,
