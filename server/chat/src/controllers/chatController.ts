@@ -34,3 +34,20 @@ export const createNewChat = TryCatch(async(req:AuthRequest , res)=>{
             
         })
 })
+
+export const getAllChats = TryCatch(async(req:AuthRequest , res)=>{
+    const userId = req.user?._id
+    if(!userId){
+        res.status(400).json({
+            message:"user id is required"
+        })
+        return
+    }
+    const chats = await Chat.find({users:userId}).sort({updatedAt:-1})
+    const userData = await Promise.all(
+        chats.map(async(chat)=>{
+            const otherUserId = chat.users.find((id)=>id!== userId )
+        })
+    )
+    res.json(chats)
+})
