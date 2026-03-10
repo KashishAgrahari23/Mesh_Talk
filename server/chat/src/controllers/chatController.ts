@@ -89,3 +89,9 @@ export const getAllChats = TryCatch(async(req:AuthRequest , res)=>{
         chats: userData
     })
 })
+
+export const sendMessage = TryCatch(async(req:AuthRequest,res)=>{
+    const senderId = req.user?._id
+    const {chatId , text} = req.body
+    
+})
