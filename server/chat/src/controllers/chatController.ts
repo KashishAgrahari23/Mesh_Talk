@@ -174,3 +174,54 @@ export const sendMessage = TryCatch(async (req: AuthRequest, res) => {
     sender: senderId,
   });
 });
+
+export const getMessagesByChat = TryCatch(async (req: AuthRequest, res) => {
+  const userId = req.user?._id;
+  const { chatId } = req.body;
+  if (!userId) {
+    res.status(400).json({
+      message: "user id is required",
+    });
+    return;
+  }
+  if (!chatId) {
+    res.status(400).json({
+      message: "user id is required",
+    });
+    return;
+  }
+  const chat = await Chat.findById(chatId);
+  if (!chat) {
+    res.status(404).json({
+      message: "chat not found",
+    });
+    return;
+  }
+  const isUserInChat = chat.users.some(
+    (userId) => userId.toString() === userId.toString(),
+  );
+  if (!isUserInChat) {
+    res.status(403).json({
+      message: "you are not a participant of this chat",
+    });
+    return;
+  }
+  const messagesToMarkSeen = await Messages.find({
+    chatId: chatId,
+    sender: { $ne: userId },
+    seen: false,
+  });
+  await Messages.updateMany(
+    {
+      chatId: chatId,
+      sender: { $ne: userId },
+      seen: false,
+    },
+    {
+      seen: true,
+      seenAt: new Date(),
+    },
+  );
+
+  const messages = await Messages.find({ chatId }).sort({ createdAt: 1 });
+});
