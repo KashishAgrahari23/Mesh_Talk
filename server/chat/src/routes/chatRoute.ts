@@ -8,7 +8,7 @@ const router = express.Router()
 router.post("/chat" , authMiddleware , createNewChat)
 router.post("/message" , authMiddleware , upload.single("image") , sendMessage )
 router.get("/chats" , authMiddleware , getAllChats)
-router.get("/message/:id" , authMiddleware , getMessagesByChat)
+router.get("/message/:chatId" , authMiddleware , getMessagesByChat)
 
 
 export default router 

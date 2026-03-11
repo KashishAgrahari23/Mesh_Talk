@@ -19,7 +19,7 @@ export interface AuthRequest extends Request {
 export const authMiddleware = async (
   req: AuthRequest,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> => {
   try {
     const authHeader = req.headers.authorization;
@@ -38,14 +38,15 @@ export const authMiddleware = async (
 
     const decoded = jwt.verify(
       token,
-      process.env.JWT_SECRET as string
+      process.env.JWT_SECRET as string,
     ) as DecodedToken;
 
     req.user = {
       _id: decoded.id,
       email: decoded.email,
     };
-
+    console.log("Auth header:", req.headers.authorization);
+    console.log("Decoded token:", decoded);
     next();
   } catch (error) {
     res.status(401).json({ message: "Invalid token" });

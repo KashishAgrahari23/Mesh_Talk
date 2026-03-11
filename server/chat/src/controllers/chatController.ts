@@ -178,15 +178,17 @@ export const sendMessage = TryCatch(async (req: AuthRequest, res) => {
 export const getMessagesByChat = TryCatch(async (req: AuthRequest, res) => {
   const userId = req.user?._id;
   const { chatId } = req.params;
+  console.log(userId)
+  console.log("chatId:- ",chatId)
   if (!userId) {
     res.status(400).json({
-      message: "user id is required",
+      message: "User id is required",
     });
     return;
   }
   if (!chatId) {
     res.status(400).json({
-      message: "user id is required",
+      message: "Chat id is required",
     });
     return;
   }
@@ -198,7 +200,7 @@ export const getMessagesByChat = TryCatch(async (req: AuthRequest, res) => {
     return;
   }
   const isUserInChat = chat.users.some(
-    (userId) => userId.toString() === userId.toString(),
+    (id) => id.toString() === userId.toString(),
   );
   if (!isUserInChat) {
     res.status(403).json({
@@ -224,22 +226,25 @@ export const getMessagesByChat = TryCatch(async (req: AuthRequest, res) => {
   );
 
   const messages = await Messages.find({ chatId }).sort({ createdAt: 1 });
-  const otherUserId = chat.users.find((id) => id !== userId);
+  const otherUserId = chat.users.find((id) => id.toString() !== userId.toString());
+  if (!otherUserId) {
+    res.status(403).json({
+      message: "no other user",
+    });
+    return
+  }
   try {
     const url = `${process.env.USER_SERVICE}/api/v1/user/${otherUserId}`;
     // console.log("Calling user service:", url);
     // console.log("env variable: ", process.env.USER_SERVICE);
     const { data } = await axios.get(url);
-    if (!otherUserId) {
-    res.status(403).json({
-      message: "no other user",
-    });
-    return;
-    res.status(200).json({
+    
+
+res.status(200).json({
       messages,
       user:data.user
-    });
-  }} catch (error) {
+    }); 
+} catch (error) {
     console.log(error)
     res.json({
         messages,
