@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import axios from "axios"
 import { ArrowRight, Loader2, Lock } from "lucide-react"
+import Cookies from "js-cookie"
 
 const VerifyPage = () => {
 
@@ -107,9 +108,15 @@ const VerifyPage = () => {
           otp: enteredOtp
         }
       )
-
-      localStorage.setItem("token",data.token)
-
+      alert(data.message)
+      Cookies.set("token" , data.token,{
+        expires:15,
+        secure:false,
+        path:"/"
+      })
+      // localStorage.setItem("to/ken",data.token)
+      setOtp(["","","","","",""])
+      inputRefs.current[0]?.focus()
       router.push("/chat")
 
     }catch(error:any){
