@@ -65,7 +65,7 @@ export const verifyUser = TryCatch(async (req, res) => {
 });
 
 export const myProfile = TryCatch(async (req: AuthRequest, res) => {
-  const user = req.user;
+  const user = await User.findById(req.user?._id);
   res.json(user);
 });
 

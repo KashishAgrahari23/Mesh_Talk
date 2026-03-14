@@ -1,35 +1,37 @@
 "use client"
 
-import React, { createContext, useContext, useState } from "react"
+import React, { createContext, useContext, useEffect, useState } from "react"
+import Cookies from "js-cookie"
+import axios from "axios"
 
 export const user_service = "http://localhost:8080"
 export const chat_service = "http://localhost:8000"
 
-export interface User{
+export interface User {
     _id: string
     name: string
     email: string
 }
 
-export interface Chat{
+export interface Chat {
     _id: string
     users: string[]
     latestMessage: {
-        text:string
-        sender:string
+        text: string
+        sender: string
     }
     createdAt: string
     updatedAt: string
     unseenCount?: number
 }
 
-export interface Chats{
+export interface Chats {
     _id: string
     user: User
     chat: Chat
 }
 
-interface AppContextType{
+interface AppContextType {
     user: User | null
     loading: boolean
     isAuth: boolean
@@ -46,16 +48,26 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     const [isAuth, setIsAuth] = useState<boolean>(false)
 
     async function fetchUser() {
-    try {
-        
-    } catch (error) {
-        console.log(error)
-        setLoading(false)
-    }
-        
+        try {
+            const token = Cookies.get("token")
+            const { data } = await axios.get(`${user_service}/api/v1/profile`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+            setUser(data)
+            setIsAuth(true)
+            setLoading(false)
+        } catch (error) {
+            console.log(error)
+            setLoading(false)
+        }
+
     }
 
-
+    useEffect(() => {
+        fetchUser()
+    }, [])
     return (
         <AppContext.Provider
             value={{
@@ -75,7 +87,7 @@ export const useAppContext = () => {
 
     const context = useContext(AppContext)
 
-    if(!context){
+    if (!context) {
         throw new Error("useAppContext must be used within AppProvider")
     }
 
