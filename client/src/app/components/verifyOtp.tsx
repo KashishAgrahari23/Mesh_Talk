@@ -7,6 +7,7 @@ import { ArrowRight, Loader2, Lock , ChevronLeft } from "lucide-react"
 import Cookies from "js-cookie"
 import { useAppContext } from "../context/AppContext"
 import Loading from "./Loading"
+import toast from "react-hot-toast"
 
 const VerifyOtp = () => {
     const {isAuth , setIsAuth , setUser , loading : userLoading} = useAppContext()
@@ -112,7 +113,7 @@ const VerifyOtp = () => {
           otp: enteredOtp
         }
       )
-      alert(data.message)
+      toast.success(data.message)
       Cookies.set("token", data.token, {
         expires: 15,
         secure: false,
@@ -146,7 +147,7 @@ const VerifyOtp = () => {
         { email }
       )
 
-      alert(data.message)
+      toast.success(data.message)
 
       setOtp(["", "", "", "", "", ""])
       inputRefs.current[0]?.focus()
@@ -155,7 +156,7 @@ const VerifyOtp = () => {
 
     } catch (error: any) {
 
-      alert(error?.response?.data?.message || "Failed to resend OTP")
+      toast.error(error?.response?.data?.message || "Failed to resend OTP")
 
     } finally {
       setResendLoading(false)

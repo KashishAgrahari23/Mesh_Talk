@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react"
 import Cookies from "js-cookie"
 import axios from "axios"
+import {Toaster} from "react-hot-toast"
 
 export const user_service = "http://localhost:8080"
 export const chat_service = "http://localhost:8000"
@@ -79,6 +80,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
             }}
         >
             {children}
+            <Toaster/>
         </AppContext.Provider>
     )
 }

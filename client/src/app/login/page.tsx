@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { ArrowRight, Loader2, Mail } from "lucide-react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 const LoginPage = () => {
     const [email, setEmail] = useState<string>("");
@@ -15,10 +16,10 @@ const LoginPage = () => {
         setLoading(true)
         try {
             const { data } = await axios.post(`http://localhost:8080/api/v1/login`, { email })
-            alert(data.message)
+            toast.success(data.message)
             router.push(`/verify?email=${email}`)
         } catch (error: any) {
-            alert(error?.response?.data?.message || "Server not reachable")
+            toast.error(error?.response?.data?.message || "Server not reachable")
         } finally {
             setLoading(false)
         }
