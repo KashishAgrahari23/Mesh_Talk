@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react"
 import Cookies from "js-cookie"
 import axios from "axios"
-import {Toaster} from "react-hot-toast"
+import toast, {Toaster} from "react-hot-toast"
 
 export const user_service = "http://localhost:8080"
 export const chat_service = "http://localhost:8000"
@@ -66,8 +66,35 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
 
     }
 
+    async function logoutUser() {
+        Cookies.remove("token")
+        setUser(null)
+        setIsAuth(false)
+        toast.success("User logged out successfully")
+        
+    }
+
+    const [chats , setChats] = useState<Chats[] | null >(null)
+    async function fetchChats() {
+        const token = Cookies.get("token")
+        try {const token = Cookies.get("token")
+            const { data } = await axios.get(`${chat_service}/api/v1/profile`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }) 
+            setChats(data.chats)
+        } catch (error) {
+            console.log(error)
+        }
+        
+    }
+
+    const [users, setUsers] = useState<User[]| null>(null)
+
     useEffect(() => {
         fetchUser()
+        fetchChats()
     }, [])
     return (
         <AppContext.Provider
