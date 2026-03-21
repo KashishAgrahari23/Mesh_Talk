@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react"
 import Cookies from "js-cookie"
 import axios from "axios"
-import toast, {Toaster} from "react-hot-toast"
+import toast, { Toaster } from "react-hot-toast"
 
 export const user_service = "http://localhost:8080"
 export const chat_service = "http://localhost:8000"
@@ -34,10 +34,18 @@ export interface Chats {
 
 interface AppContextType {
     user: User | null
+    chats: Chats[] | null
+    users: User[] | null
     loading: boolean
     isAuth: boolean
     setUser: React.Dispatch<React.SetStateAction<User | null>>
     setIsAuth: React.Dispatch<React.SetStateAction<boolean>>
+    setChats: React.Dispatch<React.SetStateAction<Chats [] | null>>
+    fetchUser: () => Promise<void>
+    fetchChats: () => Promise<void>
+    fetchUsers: () => Promise<void>
+    logoutUser: () => void
+
 }
 
 const AppContext = createContext<AppContextType | null>(null)
@@ -49,8 +57,13 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     const [isAuth, setIsAuth] = useState<boolean>(false)
 
     async function fetchUser() {
+        const token = Cookies.get("token")
+        if (!token) {
+            setLoading(false)
+            return
+        }
         try {
-            const token = Cookies.get("token")
+
             const { data } = await axios.get(`${user_service}/api/v1/profile`, {
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -70,44 +83,73 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         Cookies.remove("token")
         setUser(null)
         setIsAuth(false)
+        setChats(null)
         toast.success("User logged out successfully")
-        
+
     }
 
-    const [chats , setChats] = useState<Chats[] | null >(null)
+    const [chats, setChats] = useState<Chats[] | null>(null)
     async function fetchChats() {
         const token = Cookies.get("token")
-        try {const token = Cookies.get("token")
-            const { data } = await axios.get(`${chat_service}/api/v1/profile`, {
+        if (!token) return
+        try {
+            const { data } = await axios.get(`${chat_service}/api/v1/chats`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
-            }) 
+            })
             setChats(data.chats)
         } catch (error) {
             console.log(error)
         }
-        
+
     }
 
-    const [users, setUsers] = useState<User[]| null>(null)
+    const [users, setUsers] = useState<User[] | null>(null)
+
+    async function fetchUsers() {
+        const token = Cookies.get("token")
+        if (!token) return
+        try {
+            const { data } = await axios.get(`${user_service}/api/v1/users`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+            setUsers(data.users)
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     useEffect(() => {
         fetchUser()
-        fetchChats()
     }, [])
+
+    useEffect(() => {
+        if (isAuth) {
+            fetchChats()
+            fetchUsers()
+        }
+    }, [isAuth])
     return (
         <AppContext.Provider
             value={{
                 user,
+                chats,
+                users,
                 loading,
                 isAuth,
                 setUser,
-                setIsAuth
+                setIsAuth,
+                fetchUser,
+                fetchChats,
+                fetchUsers,
+                logoutUser
             }}
         >
             {children}
-            <Toaster/>
+            <Toaster />
         </AppContext.Provider>
     )
 }

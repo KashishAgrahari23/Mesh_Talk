@@ -2,11 +2,13 @@ import express from "express"
 import dotenv from "dotenv"
 import connectDB from "./config/db.js"
 import ChatRoute from "./routes/chatRoute.js"
+import cors from "cors"
 const app = express()
 dotenv.config()
 connectDB()
 const PORT = process.env.PORT
 app.use(express.json())
+app.use(cors())
 app.use("/api/v1" , ChatRoute)
 
 app.listen(PORT , ()=>{

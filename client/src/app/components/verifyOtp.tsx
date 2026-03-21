@@ -10,7 +10,7 @@ import Loading from "./Loading"
 import toast from "react-hot-toast"
 
 const VerifyOtp = () => {
-    const {isAuth , setIsAuth , setUser , loading : userLoading} = useAppContext()
+    const {isAuth , setIsAuth , setUser , loading : userLoading, fetchChats , fetchUsers} = useAppContext()
   const [resendLoading, setResendLoading] = useState(false)
   const [loading, setLoading] = useState(false)
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""])
@@ -124,6 +124,8 @@ const VerifyOtp = () => {
       inputRefs.current[0]?.focus()
       setUser(data.user)
       setIsAuth(true)
+      fetchChats()
+      fetchUsers()
 
     } catch (error: any) {
 
