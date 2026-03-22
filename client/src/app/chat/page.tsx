@@ -40,10 +40,25 @@ const ChatApp = () => {
       router.push("/login")
     }
   }, [isAuth, loading, router])
+
+  const handleLogout =()=> logoutUser()
+
   if (loading) return <Loading />
+
   return (
     <div className='min-h-screen flex bg-gray-900 text-white relative overflow-hidden'>
-      <ChatSideBar />
+      <ChatSideBar
+  sidebarOpen={sideBar}
+  setSidebarOpen={setSideBar}
+  showAllUsers={showAllUser}
+  setShowAllUsers={setShowAllUser}
+  users={users}
+  loggedInUser={loggedInUser}
+  chats={chats}
+  selectedUser={selectedUser}
+  setSelectedUser={setSelectedUser}
+  handleLogout={logoutUser}
+/>
     </div>
   )
 }
