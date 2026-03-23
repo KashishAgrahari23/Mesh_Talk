@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { User, Chats } from "../context/AppContext"
-import { MessageCircle, Plus, Search, X } from "lucide-react"
+import { MessageCircle, Plus, Search, UserCircle, X } from "lucide-react"
 
 interface ChatSideBarProps {
     sidebarOpen: boolean
@@ -85,12 +85,13 @@ const ChatSideBar = ({
                                     <div
                                         key={u._id}
                                         onClick={() => setSelectedUser(u._id)}
-                                        className={`p-3 rounded-lg cursor-pointer ${selectedUser === u._id
+                                        className={`p-3 rounded-lg cursor-pointer flex items-center gap-3 ${selectedUser === u._id
                                                 ? "bg-blue-600"
                                                 : "bg-gray-800 hover:bg-gray-700"
                                             }`}
                                     >
-                                        {u.name}
+                                        <UserCircle className="w-5 h-5 text-gray-300 shrink-0" />
+                                        <span className="text-white">{u.name}</span>
                                     </div>
                                 ))}
                         </div>
