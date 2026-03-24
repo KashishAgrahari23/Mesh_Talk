@@ -112,7 +112,7 @@ async function createChat(u:User) {
         createChat = {createChat}
       />
       <div className="flex-1 flex flex-col justify-between p-4 backdrop-blur-xl bg-white/5 border-1 border-white/10">
-      <ChatHeader user={user} setSidebarOpen={setSideBar} />
+      <ChatHeader user={user} setSidebarOpen={setSideBar} isTyping={isTyping}/>
       </div>
     </div>
 

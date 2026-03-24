@@ -5,9 +5,10 @@ import { User } from "../context/AppContext"
 interface ChatHeaderProps {
   user: User | null
   setSidebarOpen: (open: boolean) => void
+  isTyping : boolean
 }
 
-const ChatHeader = ({ user, setSidebarOpen }: ChatHeaderProps) => {
+const ChatHeader = ({ user, setSidebarOpen , isTyping}: ChatHeaderProps) => {
   return (
     <div className="flex items-center justify-between p-4 border-b border-gray-700 bg-gray-900">
 
@@ -32,7 +33,7 @@ const ChatHeader = ({ user, setSidebarOpen }: ChatHeaderProps) => {
           <Menu className="w-5 h-5 text-gray-200" />
         </button>
       </div>
-
+        
     </div>
   )
 }
