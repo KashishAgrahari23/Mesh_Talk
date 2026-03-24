@@ -53,12 +53,13 @@ const AppContext = createContext<AppContextType | null>(null)
 export const AppProvider = ({ children }: { children: React.ReactNode }) => {
 
     const [user, setUser] = useState<User | null>(null)
-    const [loading, setLoading] = useState<boolean>(false)
+    const [loading, setLoading] = useState<boolean>(true)
     const [isAuth, setIsAuth] = useState<boolean>(false)
 
     async function fetchUser() {
         const token = Cookies.get("token")
         if (!token) {
+            setIsAuth(false)
             setLoading(false)
             return
         }
@@ -71,9 +72,10 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
             })
             setUser(data)
             setIsAuth(true)
-            setLoading(false)
         } catch (error) {
             console.log(error)
+            setIsAuth(false)
+        } finally{
             setLoading(false)
         }
 
@@ -145,7 +147,8 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
                 fetchUser,
                 fetchChats,
                 fetchUsers,
-                logoutUser
+                logoutUser,
+                setChats
             }}
         >
             {children}
