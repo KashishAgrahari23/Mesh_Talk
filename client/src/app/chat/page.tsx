@@ -7,6 +7,7 @@ import Loading from '../components/Loading'
 import ChatSideBar from '../components/ChatSideBar'
 import axios from 'axios'
 import toast from 'react-hot-toast'
+import ChatHeader from '../components/ChatHeader'
 
 export interface Message {
   _id: string;
@@ -110,6 +111,9 @@ async function createChat(u:User) {
         handleLogout={logoutUser}
         createChat = {createChat}
       />
+      <div className="flex-1 flex flex-col justify-between p-4 backdrop-blur-xl bg-white/5 border-1 border-white/10">
+      <ChatHeader user={user} setSidebarOpen={setSideBar} />
+      </div>
     </div>
 
   )
