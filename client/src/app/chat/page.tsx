@@ -8,6 +8,7 @@ import ChatSideBar from '../components/ChatSideBar'
 import axios from 'axios'
 import toast from 'react-hot-toast'
 import ChatHeader from '../components/ChatHeader'
+import ChatMessages from '../components/ChatMessages'
 
 export interface Message {
   _id: string;
@@ -26,7 +27,7 @@ export interface Message {
 
 
 const ChatApp = () => {
-  const { loading, isAuth, logoutUser, chats, user: loggedInUser, users, fetchChats, setChats ,  } = useAppContext()
+  const { loading, isAuth, logoutUser, chats, user: loggedInUser, users, fetchChats, setChats, } = useAppContext()
   const [selectedUser, setSelectedUser] = useState<string | null>(null)
   const [message, setMessage] = useState("")
   const [sideBar, setSideBar] = useState(false)
@@ -50,8 +51,8 @@ const ChatApp = () => {
   async function fetchChat() {
     const token = Cookies.get("token")
     try {
-      const {data} = await axios.get(`${chat_service}/api/v1/message/${selectedUser}`,{
-        headers:{
+      const { data } = await axios.get(`${chat_service}/api/v1/message/${selectedUser}`, {
+        headers: {
           Authorization: `Bearer ${token}`
         }
       })
@@ -63,17 +64,17 @@ const ChatApp = () => {
       console.log(error)
       toast.error("Failed to load messages")
     }
-    
+
   }
 
-async function createChat(u:User) {
+  async function createChat(u: User) {
     const token = Cookies.get("token")
     if (!token) {
       return
     }
     try {
-      const { data } = await axios.post(`${chat_service}/api/v1/chat`,{
-          userId:loggedInUser?._id , otherUserId: u._id
+      const { data } = await axios.post(`${chat_service}/api/v1/chat`, {
+        userId: loggedInUser?._id, otherUserId: u._id
       }, {
         headers: {
           Authorization: `Bearer ${token}`
@@ -88,11 +89,11 @@ async function createChat(u:User) {
 
   }
 
-  useEffect(()=>{
-    if(selectedUser){
+  useEffect(() => {
+    if (selectedUser) {
       fetchChat()
     }
-  },[selectedUser])
+  }, [selectedUser])
 
   if (loading) return <Loading />
 
@@ -109,10 +110,11 @@ async function createChat(u:User) {
         selectedUser={selectedUser}
         setSelectedUser={setSelectedUser}
         handleLogout={logoutUser}
-        createChat = {createChat}
+        createChat={createChat}
       />
       <div className="flex-1 flex flex-col justify-between p-4 backdrop-blur-xl bg-white/5 border-1 border-white/10">
-      <ChatHeader user={user} setSidebarOpen={setSideBar} isTyping={isTyping}/>
+        <ChatHeader user={user} setSidebarOpen={setSideBar} isTyping={isTyping} />
+        <ChatMessages selectedUser={selectedUser} messages={messages} loggedInUser={loggedInUser} />
       </div>
     </div>
 
