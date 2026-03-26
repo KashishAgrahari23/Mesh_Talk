@@ -1,6 +1,7 @@
 import { Message } from "@/app/chat/page"
-import { User } from "@/context/AppContext"
+import Image from "next/image"
 import React, { useEffect, useMemo, useRef } from "react"
+import { User } from "../context/AppContext"
 
 interface ChatMessagesProps {
   selectedUser: string | null
@@ -10,35 +11,72 @@ interface ChatMessagesProps {
 
 const ChatMessages = ({ selectedUser, messages, loggedInUser }: ChatMessagesProps) => {
   const bottomRef = useRef<HTMLDivElement>(null)
-  const uniqueMessages = useMemo(()=>{
-    if(!messages) return []
+  const uniqueMessages = useMemo(() => {
+    if (!messages) return []
     const seen = new Set<string>()
-    return messages.filter((message)=>{
-      if(seen.has(message._id)){
+    return messages.filter((message) => {
+      if (seen.has(message._id)) {
         return false
       }
       seen.add(message._id)
       return true
     })
-  },[messages])
+  }, [messages])
 
-  useEffect(()=>{
-    bottomRef.current?.scrollIntoView({behavior:"smooth"})
-  },[selectedUser , uniqueMessages])
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [selectedUser, uniqueMessages])
   return (
     <div className="flex-1 overflow-hidden">
-  <div className="h-full max-h-[calc(100vh-215px)] overflow-y-auto p-2 space-y-2 custom-scroll">
-    
-    {!selectedUser ? (
-      <p className="text-gray-400 text-center mt-20">
-        Please select a user to start chatting
-      </p>
-    ) : (
-      <></>
-    )}
+      <div className="h-full max-h-[calc(100vh-215px)] overflow-y-auto p-2 space-y-2 custom-scroll">
 
-  </div>
-</div>
+        {!selectedUser ? (
+          <p className="text-gray-400 text-center mt-20">
+            Please select a user to start chatting
+          </p>
+        ) : (
+          <>
+            {uniqueMessages.map((e, i) => {
+              const isSentByMe = e.sender === loggedInUser?._id
+              const uniqueKey = `${e._id}-${i}`
+
+              return (
+                <div
+                  key={uniqueKey}
+                  className={`flex flex-col gap-1 mt-2 ${isSentByMe ? "items-end" : "items-start"
+                    }`}
+                >
+                  <div
+                    className={`px-4 py-2 rounded-lg max-w-[70%] ${isSentByMe
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-700 text-white"
+                      }`}
+                  >
+                    {e.messageType === "image" && e.image && (
+                      <div className="relative group mb-2">
+                        <Image
+                          src={e.image.url}
+                          alt="shared image"
+                          className="max-w-full h-auto rounded-lg"
+                        />
+                      </div>
+                    )}
+                    {e.text && (
+                      <p className="text-sm wrap-break-word">
+                        {e.text}
+                      </p>
+                    )}
+                  </div>
+                  
+                </div>
+              )
+            })}
+            <div ref={bottomRef} />
+          </>
+        )}
+
+      </div>
+    </div>
   )
 }
 
