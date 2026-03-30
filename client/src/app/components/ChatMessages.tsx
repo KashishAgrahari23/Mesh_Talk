@@ -2,6 +2,8 @@ import { Message } from "@/app/chat/page"
 import Image from "next/image"
 import React, { useEffect, useMemo, useRef } from "react"
 import { User } from "../context/AppContext"
+import moment from "moment"
+import { Check, CheckCheck } from "lucide-react"
 
 interface ChatMessagesProps {
   selectedUser: string | null
@@ -11,6 +13,7 @@ interface ChatMessagesProps {
 
 const ChatMessages = ({ selectedUser, messages, loggedInUser }: ChatMessagesProps) => {
   const bottomRef = useRef<HTMLDivElement>(null)
+
   const uniqueMessages = useMemo(() => {
     if (!messages) return []
     const seen = new Set<string>()
@@ -26,6 +29,7 @@ const ChatMessages = ({ selectedUser, messages, loggedInUser }: ChatMessagesProp
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [selectedUser, uniqueMessages])
+
   return (
     <div className="flex-1 overflow-hidden">
       <div className="h-full max-h-[calc(100vh-215px)] overflow-y-auto p-2 space-y-2 custom-scroll">
@@ -43,34 +47,61 @@ const ChatMessages = ({ selectedUser, messages, loggedInUser }: ChatMessagesProp
               return (
                 <div
                   key={uniqueKey}
-                  className={`flex flex-col gap-1 mt-2 ${isSentByMe ? "items-end" : "items-start"
-                    }`}
+                  className={`flex flex-col gap-1 mt-2 ${
+                    isSentByMe ? "items-end" : "items-start"
+                  }`}
                 >
                   <div
-                    className={`px-4 py-2 rounded-lg max-w-[70%] ${isSentByMe
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-700 text-white"
-                      }`}
+                    className={`px-4 py-2 rounded-lg max-w-[70%] ${
+                      isSentByMe
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-700 text-white"
+                    }`}
                   >
                     {e.messageType === "image" && e.image && (
                       <div className="relative group mb-2">
                         <Image
                           src={e.image.url}
                           alt="shared image"
+                          width={200}
+                          height={200}
                           className="max-w-full h-auto rounded-lg"
                         />
                       </div>
                     )}
+
                     {e.text && (
-                      <p className="text-sm wrap-break-word">
+                      <p className="text-sm break-words">
                         {e.text}
                       </p>
                     )}
                   </div>
-                  <div className={`flex items-center gap-1 text-xs text-gray-400 ${
-                    isSentByMe ? "pr-2 flex-row-reverse" : "pl-2"
-                  }`}>
-                    
+
+                  <div
+                    className={`flex items-center gap-1 text-xs text-gray-400 ${
+                      isSentByMe ? "pr-2 flex-row-reverse" : "pl-2"
+                    }`}
+                  >
+                    <span>
+                      {moment(e.createdAt).format("hh:mm A , MMM D")}
+                    </span>
+
+                    {isSentByMe && (
+                      <div className="flex items-center ml-1">
+                        {e.seen ? (
+                          <span className="text-blue-400 flex items-center gap-1">
+                            <CheckCheck className="w-3 h-3" />
+                            {e.seenAt && (
+                              <span>
+                                {moment(e.seenAt).format("hh:mm A")}
+                              </span>
+                            )}
+                          </span>
+                        ) : (
+                          <Check className="w-3 h-3 text-gray-500" />
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               )
@@ -78,7 +109,6 @@ const ChatMessages = ({ selectedUser, messages, loggedInUser }: ChatMessagesProp
             <div ref={bottomRef} />
           </>
         )}
-
       </div>
     </div>
   )
