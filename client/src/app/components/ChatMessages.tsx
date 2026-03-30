@@ -67,7 +67,11 @@ const ChatMessages = ({ selectedUser, messages, loggedInUser }: ChatMessagesProp
                       </p>
                     )}
                   </div>
-                  
+                  <div className={`flex items-center gap-1 text-xs text-gray-400 ${
+                    isSentByMe ? "pr-2 flex-row-reverse" : "pl-2"
+                  }`}>
+                    
+                  </div>
                 </div>
               )
             })}
