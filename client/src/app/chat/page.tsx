@@ -9,6 +9,8 @@ import axios from 'axios'
 import toast from 'react-hot-toast'
 import ChatHeader from '../components/ChatHeader'
 import ChatMessages from '../components/ChatMessages'
+import MessageInput from '../components/MessageInput'
+import { constants } from 'buffer'
 
 export interface Message {
   _id: string;
@@ -89,6 +91,46 @@ const ChatApp = () => {
 
   }
 
+  const handleMsjSend = async(e:any , imageFile ?:File | null)=>{
+    e.preventDefault()
+    if(!message.trim() && !imageFile && !selectedUser) return
+    const token = Cookies.get("token")
+    try {
+      const formData = new FormData()
+      formData.append("chatId" , selectedUser)
+      if(message.trim()){
+        formData.append("text" , message)
+
+      }
+      if(imageFile){
+        formData.append("image" , imageFile)
+      }
+      const {data} = await axios.post(`${chat_service}/api/v1/message` , formData , {
+        headers:{
+          Authorization: `Bearer ${token}`,
+          "Content-Type" :"multipart/form-data"
+        }
+      })
+      setMessages((prev)=>{
+        const currMsj = prev ||  []
+        const msjExists = currMsj.some((msj)=> msj._id === data.message._id)
+        if(!msjExists) {
+          return [...currMsj , data.message]
+        }
+        return currMsj
+      })
+      setMessage("")
+      const displayText = imageFile ? "📷 Image" : message
+    } catch (error:any) {
+      toast.error(error.response.data.message)
+    } 
+  }
+
+  const handletyping = (value:string)=>{
+    setMessage(value)
+    if(!selectedUser) return
+  }
+
   useEffect(() => {
     if (selectedUser) {
       fetchChat()
@@ -115,6 +157,7 @@ const ChatApp = () => {
       <div className="flex-1 flex flex-col justify-between p-4 backdrop-blur-xl bg-white/5 border-1 border-white/10">
         <ChatHeader user={user} setSidebarOpen={setSideBar} isTyping={isTyping} />
         <ChatMessages selectedUser={selectedUser} messages={messages} loggedInUser={loggedInUser} />
+        <MessageInput selectedUser={selectedUser} message={message} setMessage={setMessage}  handleMsjSend ={handleMsjSend}  />
       </div>
     </div>
 

@@ -65,7 +65,7 @@ const ChatMessages = ({ selectedUser, messages, loggedInUser }: ChatMessagesProp
                           alt="shared image"
                           width={200}
                           height={200}
-                          className="max-w-full h-auto rounded-lg"
+                          className=" w-auto max-w-full h-auto rounded-lg"
                         />
                       </div>
                     )}
