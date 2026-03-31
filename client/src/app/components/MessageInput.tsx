@@ -15,6 +15,18 @@ const MessageInput = ({
   handleMessageSend,
 }: MessageInputProps) => {
   const [imageFile, setImageFile] = useState<File | null>(null)
+  const [isUploading, setIsUploading] = useState(false)
+
+  const handleSubmit = async(e:any)=>{
+    e.preventDefault()
+    if(!message.trim() && !imageFile) return
+     
+    setIsUploading(true)
+    await handleMessageSend(e,imageFile)
+    setImageFile(null)
+    setIsUploading(false)
+  }
+  if(!selectedUser) return null
   const fileRef = useRef<HTMLInputElement>(null)
 
   const handleImageClick = () => {
@@ -30,12 +42,7 @@ const MessageInput = ({
   return (
     <div className="p-4 border-t border-gray-700 bg-gray-900">
       <form
-        onSubmit={(e) => {
-          e.preventDefault()
-          handleMessageSend(e, imageFile)
-          setMessage("")
-          setImageFile(null)
-        }}
+        onSubmit={handleSubmit}
         className="flex items-center gap-2"
       >
         {/* Image Upload */}
