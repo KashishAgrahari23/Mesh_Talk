@@ -157,7 +157,7 @@ const ChatApp = () => {
       <div className="flex-1 flex flex-col justify-between p-4 backdrop-blur-xl bg-white/5 border-1 border-white/10">
         <ChatHeader user={user} setSidebarOpen={setSideBar} isTyping={isTyping} />
         <ChatMessages selectedUser={selectedUser} messages={messages} loggedInUser={loggedInUser} />
-        <MessageInput selectedUser={selectedUser} message={message} setMessage={setMessage}  handleMsjSend ={handleMsjSend}  />
+        <MessageInput selectedUser={selectedUser} message={message} setMessage={setMessage}  handleMessageSend ={handleMsjSend}  />
       </div>
     </div>
 

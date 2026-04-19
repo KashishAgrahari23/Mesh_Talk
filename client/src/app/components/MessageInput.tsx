@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react"
-import { Send, Image as ImageIcon } from "lucide-react"
+import { Send, ImagePlus , X } from "lucide-react"
+import Image from "next/image"
 
 interface MessageInputProps {
   selectedUser: string | null
@@ -15,19 +16,25 @@ const MessageInput = ({
   handleMessageSend,
 }: MessageInputProps) => {
   const [imageFile, setImageFile] = useState<File | null>(null)
+  const [preview, setPreview] = useState<string | null>(null)
   const [isUploading, setIsUploading] = useState(false)
 
-  const handleSubmit = async(e:any)=>{
+  const fileRef = useRef<HTMLInputElement>(null)
+
+  const handleSubmit = async (e: any) => {
     e.preventDefault()
-    if(!message.trim() && !imageFile) return
-     
+    if (!message.trim() && !imageFile) return
+
     setIsUploading(true)
-    await handleMessageSend(e,imageFile)
+    await handleMessageSend(e, imageFile)
+
+    setMessage("")
     setImageFile(null)
+    setPreview(null)
     setIsUploading(false)
   }
-  if(!selectedUser) return null
-  const fileRef = useRef<HTMLInputElement>(null)
+
+  if (!selectedUser) return null
 
   const handleImageClick = () => {
     fileRef.current?.click()
@@ -35,24 +42,52 @@ const MessageInput = ({
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setImageFile(e.target.files[0])
+      const file = e.target.files[0]
+      setImageFile(file)
+      setPreview(URL.createObjectURL(file)) 
     }
   }
 
   return (
-    <div className="p-4 border-t border-gray-700 bg-gray-900">
+    <div className="p-3 border-t border-gray-700 bg-gray-900">
+
+      {/* Preview */}
+      {preview && (
+  <div className="mb-2 relative inline-block">
+    <Image
+      src={preview}
+      alt="preview"
+      className="w-32 h-32 object-cover rounded-lg"
+    />
+
+    {/* ❌ Cancel Button */}
+    <button
+      type="button"
+      onClick={() => {
+        setImageFile(null)
+        setPreview(null)
+        if (fileRef.current) {
+          fileRef.current.value = "" // reset input
+        }
+      }}
+      className="absolute top-1 right-1 bg-black/60 hover:bg-black/80 p-1 rounded-full"
+    >
+      <X className="w-4 h-4 text-white" />
+    </button>
+  </div>
+)}
+
       <form
         onSubmit={handleSubmit}
         className="flex items-center gap-2"
       >
-        {/* Image Upload */}
+        {/* Image Button */}
         <button
           type="button"
           onClick={handleImageClick}
           className="p-2 bg-gray-800 rounded-lg hover:bg-gray-700"
-          disabled={!selectedUser}
         >
-          <ImageIcon className="w-5 h-5 text-gray-300" />
+          <ImagePlus className="w-5 h-5 text-gray-300" />
         </button>
 
         <input
@@ -68,26 +103,18 @@ const MessageInput = ({
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Type a message..."
-          disabled={!selectedUser}
-          className="flex-1 px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white outline-none"
+          className="flex-1 px-4 py-2 bg-gray-800 border border-gray-700 rounded-full text-white outline-none"
         />
 
         {/* Send */}
         <button
           type="submit"
-          disabled={!selectedUser || (!message && !imageFile)}
-          className="p-2 bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+          disabled={isUploading || (!message && !imageFile)}
+          className="p-2 bg-blue-600 rounded-full hover:bg-blue-700 disabled:opacity-50"
         >
           <Send className="w-5 h-5 text-white" />
         </button>
       </form>
-
-      {/* Preview selected image */}
-      {imageFile && (
-        <p className="text-xs text-gray-400 mt-2">
-          Selected: {imageFile.name}
-        </p>
-      )}
     </div>
   )
 }
