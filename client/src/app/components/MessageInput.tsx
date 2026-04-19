@@ -58,16 +58,17 @@ const MessageInput = ({
       src={preview}
       alt="preview"
       className="w-32 h-32 object-cover rounded-lg"
+      width={1}
+      height={1}
     />
 
-    {/* ❌ Cancel Button */}
     <button
       type="button"
       onClick={() => {
         setImageFile(null)
         setPreview(null)
         if (fileRef.current) {
-          fileRef.current.value = "" // reset input
+          fileRef.current.value = "" 
         }
       }}
       className="absolute top-1 right-1 bg-black/60 hover:bg-black/80 p-1 rounded-full"
