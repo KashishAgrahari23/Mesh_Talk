@@ -11,6 +11,7 @@ import ChatHeader from '../components/ChatHeader'
 import ChatMessages from '../components/ChatMessages'
 import MessageInput from '../components/MessageInput'
 import { constants } from 'buffer'
+import { useSocket } from '../context/SocketContext'
 
 export interface Message {
   _id: string;
@@ -38,10 +39,10 @@ const ChatApp = () => {
   const [showAllUser, setShowAllUser] = useState(false)
   const [isTyping, setIsTyping] = useState(false)
   const [typingTimeOut, setTypingTimeOut] = useState<NodeJS.Timeout | null>(null)
-
+  const {onlineUsers} = useSocket()
 
   const router = useRouter()
-
+  console.log(onlineUsers)
   useEffect(() => {
     if (!isAuth && !loading) {
       router.push("/login")
@@ -153,6 +154,7 @@ const ChatApp = () => {
         setSelectedUser={setSelectedUser}
         handleLogout={logoutUser}
         createChat={createChat}
+        onlineUsers={onlineUsers}
       />
       <div className="flex-1 flex flex-col justify-between p-4 backdrop-blur-xl bg-white/5 border-1 border-white/10">
         <ChatHeader user={user} setSidebarOpen={setSideBar} isTyping={isTyping} />

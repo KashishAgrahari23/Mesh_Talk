@@ -15,6 +15,7 @@ interface ChatSideBarProps {
     setSelectedUser: (userId: string | null) => void
     handleLogout: () => void
     createChat: (user: User) => void
+    onlineUsers: string[]
 }
 
 const ChatSideBar = ({
@@ -28,7 +29,8 @@ const ChatSideBar = ({
     selectedUser,
     setSelectedUser,
     handleLogout,
-    createChat
+    createChat,
+    onlineUsers
 }: ChatSideBarProps) => {
     const [searchQuery, setSearchQuery] = useState("")
 
@@ -60,8 +62,8 @@ const ChatSideBar = ({
 
                     <button
                         className={`p-2.5 rounded-lg transition-colors ${showAllUser
-                                ? "bg-red-600 hover:bg-red-700 text-white"
-                                : "bg-green-600 hover:bg-green-700 text-white"
+                            ? "bg-red-600 hover:bg-red-700 text-white"
+                            : "bg-green-600 hover:bg-green-700 text-white"
                             }`}
                         onClick={() => setShowAllUser((prev) => !prev)}
                     >
@@ -99,16 +101,25 @@ const ChatSideBar = ({
                                 .map((u) => (
                                     <div
                                         key={u._id}
-                                        onClick={() => { 
+                                        onClick={() => {
                                             createChat(u)
                                         }}
                                         className={`p-3 rounded-lg cursor-pointer flex items-center gap-3 ${selectedUser === u._id
-                                                ? "bg-blue-600"
-                                                : "bg-gray-800 hover:bg-gray-700"
+                                            ? "bg-blue-600"
+                                            : "bg-gray-800 hover:bg-gray-700"
                                             }`}
                                     >
-                                        <UserCircle className="w-5 h-5 text-gray-300 shrink-0" />
-                                        <span className="text-white">{u.name}</span>
+                                        <div className="flex items-center gap-3">
+                                            <div className="relative">
+                                                <UserCircle className="w-6 h-6 text-gray-300" />
+
+                                                {onlineUsers.includes(u._id) && (
+                                                    <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-green-500 border-2 border-gray-900" />
+                                                )}
+                                            </div>
+
+                                            <span className="text-white">{u.name}</span>
+                                        </div>
                                     </div>
                                 ))}
                         </div>
@@ -127,8 +138,8 @@ const ChatSideBar = ({
                                     key={chat.chat._id}
                                     onClick={() => setSelectedUser(chat.chat._id)}
                                     className={`w-full text-left p-3 rounded-lg flex items-center justify-between ${isSelected
-                                            ? "bg-blue-600"
-                                            : "bg-gray-800 hover:bg-gray-700"
+                                        ? "bg-blue-600"
+                                        : "bg-gray-800 hover:bg-gray-700"
                                         }`}
                                 >
                                     <div className="flex flex-col min-w-0">
