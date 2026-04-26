@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AppProvider } from "./context/AppContext";
+import { SocketProvider } from "./context/SocketContext";
 
 export const metadata: Metadata = {
   title: "Meshtalk",
@@ -15,7 +16,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <AppProvider>{children}</AppProvider>
+        <AppProvider> <SocketProvider>{children}</SocketProvider> </AppProvider>
         
       </body>
     </html>

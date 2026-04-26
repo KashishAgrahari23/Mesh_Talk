@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from "react"
 import { io, Socket } from "socket.io-client"
-import { useAppContext } from "./AppContext"
+import { useAppContext, chat_service } from "./AppContext"
 
 interface SocketContextType {
   socket: Socket | null
@@ -10,6 +10,7 @@ interface SocketContextType {
 
 const SocketContext = createContext<SocketContextType>({
   socket: null,
+  onlineUsers: [],
 })
 
 interface ProviderProps {
@@ -23,14 +24,12 @@ export const SocketProvider = ({ children }: ProviderProps) => {
   useEffect(() => {
     if (!user) return
 
-    // 🔥 connect to backend
-    const newSocket = io("http://localhost:8000", {
+    const newSocket = io(chat_service, {
       transports: ["websocket"],
     })
 
     setSocket(newSocket)
 
-    // optional: send user info to server
     newSocket.emit("setup", user._id)
 
     newSocket.on("connect", () => {
