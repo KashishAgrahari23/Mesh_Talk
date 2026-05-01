@@ -42,7 +42,7 @@ const ChatApp = () => {
   const {onlineUsers} = useSocket()
 
   const router = useRouter()
-  console.log(onlineUsers)
+  console.log(  "online users:- " , onlineUsers)
   useEffect(() => {
     if (!isAuth && !loading) {
       router.push("/login")

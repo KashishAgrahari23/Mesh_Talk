@@ -143,9 +143,19 @@ const ChatSideBar = ({
                                         }`}
                                 >
                                     <div className="flex flex-col min-w-0">
-                                        <span className="text-white font-medium">
-                                            {chat.user.name}
-                                        </span>
+                                        <div className="flex items-center gap-2">
+                                            <div className="relative">
+                                                <UserCircle className="w-5 h-5 text-gray-300" />
+
+                                                {onlineUsers.includes(chat.user._id) && (
+                                                    <span className="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-green-500 border border-gray-900" />
+                                                )}
+                                            </div>
+
+                                            <span className="text-white font-medium">
+                                                {chat.user.name}
+                                            </span>
+                                        </div>
 
                                         <span className="text-xs text-gray-400 truncate flex items-center gap-1">
                                             {isSentByMe && (
