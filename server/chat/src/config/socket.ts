@@ -53,7 +53,7 @@ io.on("connection" , (socket:Socket)=>{
         console.log(`User ${userId} joined chat room ${chatId}`)
     })
     socket.on("leaveChat" , (chatId)=>{
-        socket.join(chatId)
+        socket.leave(chatId)
         console.log(`User ${userId} left chat room ${chatId}`)
     })
 
