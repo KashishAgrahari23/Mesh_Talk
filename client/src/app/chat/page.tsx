@@ -1,4 +1,5 @@
 "use client"
+
 import React, { useEffect, useState } from 'react'
 import Cookies from "js-cookie"
 import { chat_service, useAppContext, User } from '../context/AppContext'
@@ -33,23 +34,23 @@ const ChatApp = () => {
 
   const [selectedUser, setSelectedUser] = useState<string | null>(null)
   const [message, setMessage] = useState("")
-  const [sideBar, setSideBar] = useState(false)
   const [messages, setMessages] = useState<Message[] | null>(null)
   const [user, setUser] = useState<User | null>(null)
+  const [sideBar, setSideBar] = useState(false)
   const [showAllUser, setShowAllUser] = useState(false)
   const [isTyping, setIsTyping] = useState(false)
-  const [typingTimeOut, setTypingTimeOut] = useState<NodeJS.Timeout | null>(null)
+  const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout | null>(null)
 
   const router = useRouter()
 
+  // auth check
   useEffect(() => {
     if (!isAuth && !loading) {
       router.push("/login")
     }
   }, [isAuth, loading])
 
-  const handleLogout = () => logoutUser()
-
+  // 🔥 join room
   useEffect(() => {
     if (socket && selectedUser) {
       socket.emit("joinChat", selectedUser)
@@ -58,17 +59,11 @@ const ChatApp = () => {
     return () => {
       if (socket && selectedUser) {
         socket.emit("leaveChat", selectedUser)
-        setMessages(null)
       }
     }
   }, [socket, selectedUser])
 
-  useEffect(()=>{
-    return () => {
-      if(typingTimeOut) clearTimeout(typingTimeOut)
-    }
-  },[typingTimeOut])
-
+  // 🔥 listen typing
   useEffect(() => {
     if (!socket) return
 
@@ -88,28 +83,30 @@ const ChatApp = () => {
       socket.off("userTyping")
       socket.off("userStoppedTyping")
     }
-  }, [socket, selectedUser , loggedInUser?._id])
+  }, [socket, selectedUser, loggedInUser?._id])
 
+  // fetch chat
   async function fetchChat() {
     const token = Cookies.get("token")
+
     try {
       const { data } = await axios.get(`${chat_service}/api/v1/message/${selectedUser}`, {
         headers: { Authorization: `Bearer ${token}` }
       })
+
       setMessages(data.messages)
       setUser(data.user)
       await fetchChats()
-    } catch (error) {
+    } catch {
       toast.error("Failed to load messages")
     }
   }
 
   useEffect(() => {
-    if (selectedUser){
-      fetchChat();
-    } 
+    if (selectedUser) fetchChat()
   }, [selectedUser])
 
+  // send message
   const handleMsjSend = async (e: any, imageFile?: File | null) => {
     e.preventDefault()
     if (!message.trim() && !imageFile) return
@@ -121,12 +118,12 @@ const ChatApp = () => {
 
     const token = Cookies.get("token")
 
-    try {
-      const formData = new FormData()
-      formData.append("chatId", selectedUser!)
-      if (message.trim()) formData.append("text", message)
-      if (imageFile) formData.append("image", imageFile)
+    const formData = new FormData()
+    formData.append("chatId", selectedUser!)
+    if (message.trim()) formData.append("text", message)
+    if (imageFile) formData.append("image", imageFile)
 
+    try {
       const { data } = await axios.post(`${chat_service}/api/v1/message`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -134,13 +131,14 @@ const ChatApp = () => {
         }
       })
 
-      setMessages((prev) => [...(prev || []), data.message])
+      setMessages(prev => [...(prev || []), data.message])
       setMessage("")
     } catch {
       toast.error("Message failed")
     }
   }
 
+  // 🔥 typing emit
   const handleTyping = (value: string) => {
     setMessage(value)
 
@@ -151,16 +149,16 @@ const ChatApp = () => {
       userId: loggedInUser?._id
     })
 
-    if (typingTimeOut) clearTimeout(typingTimeOut)
+    if (typingTimeout) clearTimeout(typingTimeout)
 
     const timeout = setTimeout(() => {
       socket.emit("stopTyping", {
         chatId: selectedUser,
         userId: loggedInUser?._id
       })
-    }, 2000)
+    }, 1500)
 
-    setTypingTimeOut(timeout)
+    setTypingTimeout(timeout)
   }
 
   if (loading) return <Loading />
@@ -177,8 +175,8 @@ const ChatApp = () => {
         chats={chats}
         selectedUser={selectedUser}
         setSelectedUser={setSelectedUser}
-        handleLogout={handleLogout}
-        createChat={() => { }}
+        handleLogout={logoutUser}
+        createChat={() => {}}
         onlineUsers={onlineUsers}
       />
 
